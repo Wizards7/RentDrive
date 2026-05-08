@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(psql -U postgres -c \"\\\\l\")",
+      "Bash(psql -U ali -c \"\\\\l\")"
+    ]
+  }
+}

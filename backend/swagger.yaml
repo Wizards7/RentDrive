@@ -1,0 +1,813 @@
+openapi: 3.0.0
+info:
+  title: CarShare Tajikistan API
+  description: Backend API for a car-sharing app in Dushanbe, Tajikistan
+  version: 1.1.0
+servers:
+  - url: http://localhost:3001
+    description: Local development
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+    Car:
+      type: object
+      properties:
+        id:
+          type: string
+        licensePlate:
+          type: string
+        model:
+          type: string
+        year:
+          type: integer
+        carClass:
+          type: string
+          enum: [ECONOMY, COMFORT, CROSSOVER]
+        features:
+          type: array
+          items:
+            type: string
+          example: ["CarPlay", "multiwheel steering"]
+        imageUrl:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        fuelLevel:
+          type: integer
+          description: Fuel level 0-100%
+        status:
+          type: string
+          enum: [AVAILABLE, RENTED, MAINTENANCE]
+        distanceMeters:
+          type: integer
+          description: Distance from user in meters (only on /cars/nearby)
+        tariff:
+          $ref: '#/components/schemas/Tariff'
+    Rental:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        carId:
+          type: string
+        package:
+          type: string
+          enum: [PER_MINUTE, H3, H6, H12, H24]
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        startLatitude:
+          type: number
+        startLongitude:
+          type: number
+        endLatitude:
+          type: number
+        endLongitude:
+          type: number
+        drivingMinutes:
+          type: number
+        waitingMinutes:
+          type: number
+        distanceKm:
+          type: number
+        totalCost:
+          type: number
+          description: Cost in TJS (Tajik Somoni)
+        currency:
+          type: string
+          example: TJS
+        status:
+          type: string
+          enum: [ACTIVE, COMPLETED, CANCELLED]
+    CostBreakdown:
+      type: object
+      properties:
+        base:
+          type: number
+          description: Base cost (time or package price)
+        overageKm:
+          type: number
+          description: Extra km driven beyond package limit
+        total:
+          type: number
+          description: Total cost in TJS
+        currency:
+          type: string
+          example: TJS
+        includesFuel:
+          type: boolean
+        includesParkingWash:
+          type: boolean
+        packageUsed:
+          type: string
+          enum: [PER_MINUTE, H3, H6, H12, H24]
+    Tariff:
+      type: object
+      properties:
+        carClass:
+          type: string
+          enum: [ECONOMY, COMFORT, CROSSOVER]
+        perMinDriving:
+          type: number
+          description: TJS per minute while driving
+        perMinWaiting:
+          type: number
+          description: TJS per minute while waiting/parked
+        perKm:
+          type: number
+          description: TJS per km (applies to PER_MINUTE and package overage)
+        packages:
+          type: object
+          properties:
+            H3:
+              type: object
+              properties:
+                price:
+                  type: number
+                includedKm:
+                  type: integer
+            H6:
+              type: object
+              properties:
+                price:
+                  type: number
+                includedKm:
+                  type: integer
+            H12:
+              type: object
+              properties:
+                price:
+                  type: number
+                includedKm:
+                  type: integer
+            H24:
+              type: object
+              properties:
+                price:
+                  type: number
+                includedKm:
+                  type: integer
+        includesFuel:
+          type: boolean
+        includesParkingWash:
+          type: boolean
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        phone:
+          type: string
+        phoneVerified:
+          type: boolean
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date-time
+        tajikPassportNumber:
+          type: string
+        tajikPassportVerified:
+          type: boolean
+        driverLicenseNumber:
+          type: string
+        driverLicenseVerified:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [REFUEL, MAINTENANCE, WASH]
+        carId:
+          type: string
+        car:
+          type: object
+          properties:
+            model:
+              type: string
+            licensePlate:
+              type: string
+            latitude:
+              type: number
+            longitude:
+              type: number
+            fuelLevel:
+              type: integer
+        status:
+          type: string
+          enum: [PENDING, IN_PROGRESS, COMPLETED]
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+paths:
+  # ── Auth ──────────────────────────────────────────────────────────────────
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user (18+ only, sends OTP)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone, password, firstName, lastName, dateOfBirth]
+              properties:
+                phone:
+                  type: string
+                  example: "+992900123456"
+                  description: Tajik phone number (+992XXXXXXXXX)
+                password:
+                  type: string
+                  minLength: 8
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                dateOfBirth:
+                  type: string
+                  format: date
+                  example: "2000-01-15"
+      responses:
+        '201':
+          description: Registration successful, OTP sent to phone
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  userId:
+                    type: string
+        '400':
+          description: Validation error or user under 18
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Phone already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/verify-phone:
+    post:
+      tags: [Auth]
+      summary: Verify phone number with OTP code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone, code]
+              properties:
+                phone:
+                  type: string
+                code:
+                  type: string
+                  example: "123456"
+      responses:
+        '200':
+          description: Phone verified successfully
+        '400':
+          description: Invalid or expired OTP
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login and receive JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone, password]
+              properties:
+                phone:
+                  type: string
+                  example: "+992900123456"
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Phone not verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ── Users ─────────────────────────────────────────────────────────────────
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Get current user profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+
+    patch:
+      tags: [Users]
+      summary: Update current user profile (name only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+      responses:
+        '200':
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+
+  /users/me/driver-license:
+    post:
+      tags: [Users]
+      summary: Submit driver license number for verification
+      description: Saves the license number. Admin manually verifies before driverLicenseVerified becomes true.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [licenseNumber]
+              properties:
+                licenseNumber:
+                  type: string
+                  example: "TJ-12345678"
+      responses:
+        '200':
+          description: License submitted for verification
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: licenseNumber is required
+        '401':
+          description: Unauthorized
+
+  /users/me/passport:
+    post:
+      tags: [Users]
+      summary: Submit Tajik passport number for verification
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [passportNumber]
+              properties:
+                passportNumber:
+                  type: string
+                  example: "A12345678"
+      responses:
+        '200':
+          description: Passport submitted for verification
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: passportNumber is required
+        '401':
+          description: Unauthorized
+
+  # ── Cars ──────────────────────────────────────────────────────────────────
+  /cars/nearby:
+    get:
+      tags: [Cars]
+      summary: Get available cars within 1 km radius
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: lat
+          required: true
+          schema:
+            type: number
+          example: 38.5598
+          description: User latitude
+        - in: query
+          name: lon
+          required: true
+          schema:
+            type: number
+          example: 68.7870
+          description: User longitude
+      responses:
+        '200':
+          description: List of nearby available cars sorted by distance
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cars:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Car'
+                  count:
+                    type: integer
+        '400':
+          description: lat and lon are required
+
+  /cars/{id}:
+    get:
+      tags: [Cars]
+      summary: Get a single car by ID with tariff
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Car detail with tariff
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  car:
+                    $ref: '#/components/schemas/Car'
+        '404':
+          description: Car not found
+
+  # ── Map ───────────────────────────────────────────────────────────────────
+  /map/zones:
+    get:
+      tags: [Map]
+      summary: Get all active parking zones as GeoJSON FeatureCollection
+      responses:
+        '200':
+          description: GeoJSON FeatureCollection of parking zones
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: FeatureCollection
+                  features:
+                    type: array
+                    items:
+                      type: object
+
+  # ── Rentals ───────────────────────────────────────────────────────────────
+  /rentals/active:
+    get:
+      tags: [Rentals]
+      summary: Get current user's active rental (null if none)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Active rental or null
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rental:
+                    nullable: true
+                    allOf:
+                      - $ref: '#/components/schemas/Rental'
+                      - type: object
+                        properties:
+                          car:
+                            $ref: '#/components/schemas/Car'
+        '401':
+          description: Unauthorized
+
+  /rentals/history:
+    get:
+      tags: [Rentals]
+      summary: Get current user's completed/cancelled rentals (paginated)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+            maximum: 50
+      responses:
+        '200':
+          description: Paginated rental history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rentals:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Rental'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+        '401':
+          description: Unauthorized
+
+  /rentals/start:
+    post:
+      tags: [Rentals]
+      summary: Start a rental (driver license must be verified)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [carId, latitude, longitude]
+              properties:
+                carId:
+                  type: string
+                latitude:
+                  type: number
+                  example: 38.5598
+                longitude:
+                  type: number
+                  example: 68.7870
+                package:
+                  type: string
+                  enum: [PER_MINUTE, H3, H6, H12, H24]
+                  default: PER_MINUTE
+      responses:
+        '201':
+          description: Rental started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rental:
+                    $ref: '#/components/schemas/Rental'
+        '403':
+          description: Driver license not verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Car not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: User already has an active rental
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /rentals/end:
+    post:
+      tags: [Rentals]
+      summary: End a rental (must be inside Green Zone and parking zone)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rentalId, latitude, longitude, drivingMinutes, waitingMinutes, distanceKm]
+              properties:
+                rentalId:
+                  type: string
+                latitude:
+                  type: number
+                longitude:
+                  type: number
+                drivingMinutes:
+                  type: number
+                  description: Minutes actively driving
+                waitingMinutes:
+                  type: number
+                  description: Minutes car was idle/waiting
+                distanceKm:
+                  type: number
+                  description: Total distance driven in km
+      responses:
+        '200':
+          description: Rental ended, cost calculated in TJS
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rental:
+                    $ref: '#/components/schemas/Rental'
+                  cost:
+                    $ref: '#/components/schemas/CostBreakdown'
+        '400':
+          description: Outside Dushanbe Green Zone or not in a parking zone
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Active rental not found
+
+  # ── Tariffs ───────────────────────────────────────────────────────────────
+  /tariffs:
+    get:
+      tags: [Tariffs]
+      summary: Get all tariff rates for all car classes
+      responses:
+        '200':
+          description: Tariff rates per car class in TJS
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tariffs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tariff'
+                  currency:
+                    type: string
+                    example: TJS
+
+  # ── Tasks (Ops) ───────────────────────────────────────────────────────────
+  /tasks:
+    get:
+      tags: [Tasks]
+      summary: Get ops tasks (REFUEL, MAINTENANCE, WASH)
+      description: For the operations team to manage field tasks.
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [PENDING, IN_PROGRESS, COMPLETED]
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [REFUEL, MAINTENANCE, WASH]
+        - in: query
+          name: carId
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of tasks with car info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+                  count:
+                    type: integer
+
+  /tasks/{id}:
+    patch:
+      tags: [Tasks]
+      summary: Update a task status or notes
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [PENDING, IN_PROGRESS, COMPLETED]
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task:
+                    $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid status value
+        '404':
+          description: Task not found

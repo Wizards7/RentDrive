@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #111827;
+  --card: #f9fafb;
+  --border: #e5e7eb;
+  --muted: #6b7280;
+
+  --primary: #2D8A1E;
+  --primary-hover: #36A823;
+  --primary-dark: #1F6314;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-dark: var(--primary-dark);
+}
+
+.dark {
+  --background: #0A0A0A;
+  --foreground: #ffffff;
+  --card: #111111;
+  --border: #1E1E1E;
+  --muted: #a1a1aa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Auth Sliding Animations */
+@keyframes auth-move {
+  0%, 49.99% {
+    opacity: 0;
+    z-index: 1;
+  }
+  50%, 100% {
+    opacity: 1;
+    z-index: 5;
+  }
+}
+
+.auth-animate-move {
+  animation: auth-move 0.7s;
+}
+
+/* Sticky card stack — top shadow so each section looks layered */
+[data-stack-card] {
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.6);
+  border-radius: 20px 20px 0 0;
+}
+
+/* Infinite marquee animations */
+@keyframes marquee-left {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes marquee-right {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+.animate-marquee-left {
+  animation: marquee-left 30s linear infinite;
+  will-change: transform;
+}
+.animate-marquee-right {
+  animation: marquee-right 30s linear infinite;
+  will-change: transform;
+}
+
+/* Liquid Glass effect */
+.liquid-glass {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: none;
+  overflow: hidden;
+}

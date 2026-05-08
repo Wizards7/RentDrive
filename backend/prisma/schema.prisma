@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                      String    @id @default(cuid())
+  phone                   String    @unique
+  phoneVerified           Boolean   @default(false)
+  passwordHash            String
+  firstName               String
+  lastName                String
+  dateOfBirth             DateTime
+  tajikPassportNumber     String?
+  tajikPassportVerified   Boolean   @default(false)
+  driverLicenseNumber     String?
+  driverLicenseVerified   Boolean   @default(false)
+  isBlocked               Boolean   @default(false)
+  isVip                   Boolean   @default(false)
+  vipDiscount             Int       @default(0)
+  rating                  Float     @default(5.0)
+  isBlacklisted           Boolean   @default(false)
+  rentals                 Rental[]
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model PhoneVerification {
+  id        String   @id @default(cuid())
+  phone     String
+  code      String
+  expiresAt DateTime
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Car {
+  id           String    @id @default(cuid())
+  licensePlate String    @unique
+  model        String
+  year         Int?
+  carClass     CarClass  @default(ECONOMY)
+  features     String[]
+  imageUrl     String?
+  latitude     Float
+  longitude    Float
+  fuelLevel    Int
+  status       CarStatus @default(AVAILABLE)
+  rentals      Rental[]
+  tasks        Task[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Tariff {
+  id                  String   @id @default(cuid())
+  carClass            CarClass @unique
+  perMinDriving       Float
+  perMinWaiting       Float
+  perKm               Float
+  package3h           Float
+  package6h           Float
+  package12h          Float
+  package24h          Float
+  packageKmLimit3h    Int
+  packageKmLimit6h    Int
+  packageKmLimit12h   Int
+  packageKmLimit24h   Int
+  includesFuel        Boolean  @default(true)
+  includesParkingWash Boolean  @default(true)
+  isActive            Boolean  @default(true)
+  updatedAt           DateTime @updatedAt
+}
+
+model ParkingZone {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  geojson     Json
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model Rental {
+  id              String        @id @default(cuid())
+  userId          String
+  carId           String
+  user            User          @relation(fields: [userId], references: [id])
+  car             Car           @relation(fields: [carId], references: [id])
+  package         RentalPackage @default(PER_MINUTE)
+  startTime       DateTime      @default(now())
+  endTime         DateTime?
+  startLatitude   Float
+  startLongitude  Float
+  endLatitude     Float?
+  endLongitude    Float?
+  drivingMinutes  Float         @default(0)
+  waitingMinutes  Float         @default(0)
+  distanceKm      Float         @default(0)
+  totalCost       Float?
+  currency        String        @default("TJS")
+  status          RentalStatus  @default(ACTIVE)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model Task {
+  id        String     @id @default(cuid())
+  type      TaskType
+  carId     String
+  car       Car        @relation(fields: [carId], references: [id])
+  status    TaskStatus @default(PENDING)
+  notes     String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+enum CarClass {
+  ECONOMY
+  COMFORT
+  CROSSOVER
+}
+
+enum RentalPackage {
+  PER_MINUTE
+  H3
+  H6
+  H12
+  H24
+}
+
+enum CarStatus {
+  AVAILABLE
+  RENTED
+  MAINTENANCE
+}
+
+enum RentalStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum TaskType {
+  REFUEL
+  MAINTENANCE
+  WASH
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}

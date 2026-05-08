@@ -1,0 +1,278 @@
+{
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "phone": "Phone number",
+    "password": "Password",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "dateOfBirth": "Date of birth",
+    "verifyPhone": "Verify phone",
+    "otpCode": "OTP code",
+    "loginButton": "Sign in",
+    "registerButton": "Create account",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "success": {
+      "login": "Login Successful",
+      "loginSub": "Redirecting you to the platform...",
+      "register": "Account Created!",
+      "registerSub": "Welcome to Dushanbe Drive. Let's get you signed in.",
+      "logout": "Logged Out",
+      "logoutSub": "You have been successfully signed out."
+    }
+  },
+  "nav": {
+    "map": "Map",
+    "rentals": "My Rentals",
+    "profile": "Profile"
+  },
+  "cars": {
+    "nearby": "Cars near you",
+    "available": "Available",
+    "rented": "Rented",
+    "maintenance": "In maintenance",
+    "fuelLevel": "Fuel",
+    "distanceAway": "{distance} m away",
+    "rent": "Rent this car",
+    "economy": "Economy",
+    "comfort": "Comfort",
+    "crossover": "Crossover"
+  },
+  "rentals": {
+    "active": "Active rental",
+    "history": "Rental history",
+    "start": "Start rental",
+    "end": "End rental",
+    "package": "Package",
+    "perMinute": "Per minute",
+    "threeHours": "3 hours",
+    "sixHours": "6 hours",
+    "twelveHours": "12 hours",
+    "twentyFourHours": "24 hours",
+    "totalCost": "Total cost",
+    "duration": "Duration",
+    "distance": "Distance",
+    "noActiveRental": "No active rental",
+    "noHistory": "No past rentals"
+  },
+  "profile": {
+    "title": "Profile",
+    "documents": "Documents",
+    "driverLicense": "Driver license",
+    "passport": "Tajik passport",
+    "verified": "Verified",
+    "pending": "Pending verification",
+    "submit": "Submit",
+    "licenseNumber": "License number",
+    "passportNumber": "Passport number"
+  },
+  "admin": {
+    "sidebar": {
+      "overview": "Overview",
+      "fleet": "Fleet Management",
+      "fleetMap": "Live Fleet Map",
+      "users": "Users",
+      "tasks": "Operational Tasks",
+      "profile": "My Profile",
+      "signOut": "Sign out",
+      "terminal": "ADMIN TERMINAL"
+    },
+    "topbar": {
+      "notifications": "Notifications",
+      "total": "{count} total",
+      "noNotifications": "No notifications",
+      "profile": "Admin Profile"
+    },
+    "overview": {
+      "title": "Overview",
+      "subtitle": "DushanbeDrive fleet management terminal",
+      "stats": {
+        "totalFleet": "Total Fleet",
+        "allVehicles": "All vehicles",
+        "activeRentals": "Active Rentals",
+        "utilization": "Current utilization",
+        "pendingTasks": "Pending Tasks",
+        "needsAttention": "Needs attention",
+        "dailyRevenue": "Daily Revenue",
+        "today": "Today"
+      },
+      "inventory": {
+        "title": "Fleet Inventory",
+        "viewAll": "View All Assets",
+        "plate": "License Plate",
+        "model": "Model",
+        "class": "Class",
+        "fuel": "Fuel Level",
+        "status": "Status"
+      },
+      "tasks": {
+        "title": "Service Tasks",
+        "viewAll": "View All"
+      },
+      "users": {
+        "title": "User Management",
+        "live": "Live",
+        "viewAll": "View All Users",
+        "desc": "Go to the Users page to view registered accounts, verify documents, and manage access levels for all DushanbeDrive members."
+      }
+    },
+    "users": {
+      "title": "User Management",
+      "subtitle": "{count} registered users",
+      "searchPlaceholder": "Search by name or phone...",
+      "table": {
+        "user": "User",
+        "phone": "Phone",
+        "documents": "Documents",
+        "status": "Status",
+        "joined": "Joined",
+        "actions": "Actions"
+      },
+      "vip": "VIP",
+      "blocked": "Blocked",
+      "grantVip": "Grant VIP Status",
+      "setDiscount": "Set personal discount for {name}",
+      "discountPercent": "Discount percentage",
+      "cancel": "Cancel",
+      "grant": "Grant VIP ⭐",
+      "loading": "Loading users...",
+      "noUsers": "No users found"
+    },
+    "tasks": {
+      "title": "Operational Tasks",
+      "subtitle": "{count} active requests",
+      "filters": {
+        "all": "ALL",
+        "pending": "PENDING",
+        "inProgress": "IN PROGRESS",
+        "completed": "COMPLETED"
+      },
+      "priority": "{level} PRIORITY",
+      "begin": "Begin",
+      "finish": "Finish"
+    },
+    "logoutModal": {
+      "title": "Sign out?",
+      "desc": "Are you sure you want to sign out from the admin terminal? You will need to login again to access FleetControl.",
+      "cancel": "Cancel",
+      "logout": "Logout"
+    },
+    "profilePage": {
+      "title": "Admin Profile",
+      "subtitle": "Manage your admin account",
+      "accountInfo": "Account Info",
+      "changePassword": "Change Password",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "updateButton": "Update Password",
+      "saving": "Saving...",
+      "signOut": "Sign out from admin"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "back": "Back",
+    "currency": "TJS"
+  },
+  "landing": {
+    "nav": {
+      "howItWorks": "How It Works",
+      "cars": "Cars",
+      "fleet": "Our Fleet",
+      "pricing": "Pricing",
+      "safety": "Safety",
+      "support": "Support",
+      "getStarted": "Get Started",
+      "preferences": "Preferences"
+    },
+    "hero": {
+      "badge": "Available in Dushanbe",
+      "title1": "Your Car in",
+      "title2": "Dushanbe,",
+      "titleHighlight": "Ready When You Are.",
+      "description": "Experience modern mobility with the first premium carsharing in Tajikistan. Unlock any car via your phone and drive anywhere in the city.",
+      "startDriving": "Start Driving",
+      "howItWorks": "How It Works",
+      "downloadApp": "Download on the",
+      "getApp": "Get it on",
+      "stats": {
+        "cars": "Cars in fleet",
+        "users": "Active users",
+        "rating": "App rating"
+      },
+      "carCard": {
+        "economy": "Economy Class",
+        "nearby": "{count} nearby",
+        "fuel": "Fuel included",
+        "parking": "Free parking",
+        "from": "From",
+        "unit": "TJS/min"
+      }
+    },
+    "howItWorks": {
+      "subtitle": "Simple Process",
+      "title": "How It Works",
+      "description": "3 simple steps to get driving in Dushanbe",
+      "steps": {
+        "1": { "title": "Register", "desc": "Upload your ID and driver's license. Instant approval — verified users get access right away." },
+        "2": { "title": "Find a Car", "desc": "Locate the nearest car on the map. Choose Economy, Comfort, or Crossover class." },
+        "3": { "title": "Drive", "desc": "Unlock with the app, enjoy your trip around Dushanbe, and park in any green zone." }
+      }
+    },
+    "features": {
+      "subtitle": "Why Choose Us",
+      "title": "Everything Included",
+      "description": "No hidden fees. No surprises. Just drive.",
+      "items": {
+        "insurance": { "title": "CASCO Insurance Included", "desc": "All trips are fully insured. Drive with peace of mind knowing you're protected." },
+        "parking": { "title": "Free Parking", "desc": "Don't worry about parking fees in Dushanbe. All designated zones are free." },
+        "fuel": { "title": "Fuel Included", "desc": "Never worry about refueling. Every rental includes full fuel coverage." },
+        "support": { "title": "24/7 Support", "desc": "Our operators are always online in English, Russian, and Tajik." },
+        "safety": { "title": "Safety First", "desc": "Every vehicle is clean, safe, and ready. Advanced telematics keeps you secure." },
+        "unlock": { "title": "Instant Unlock", "desc": "Unlock any car in seconds with the app. No keys, no waiting, no hassle." }
+      }
+    },
+    "fleet": {
+      "subtitle": "Our Fleet",
+      "title": "Choose Your Ride",
+      "description": "Pick the perfect car for your journey",
+      "viewAll": "View all",
+      "reserveNow": "Reserve Now",
+      "threeHours": "3h — {price} TJS",
+      "badges": {
+        "popular": "Most Popular",
+        "value": "Best Value",
+        "premium": "Premium"
+      }
+    },
+    "packages": {
+      "subtitle": "Pricing",
+      "title": "Subscription Packages",
+      "description": "The more you drive, the more you save.",
+      "popular": "Popular",
+      "choose": "Choose",
+      "extraKm": "Extra km beyond package limit charged at 2.00 TJS/km",
+      "table": {
+        "package": "Package",
+        "hours": "Hours",
+        "km": "Included KM",
+        "price": "Price"
+      }
+    },
+    "footer": {
+      "ready": "Ready to Drive?",
+      "join": "Join 50,000+ users already driving in Dushanbe.",
+      "getStarted": "Get Started Free",
+      "desc": "Premium carsharing in Tajikistan. Modern mobility in Dushanbe.",
+      "rights": "© 2026 Dushanbe Drive. Premium Mobility for Dushanbe City.",
+      "madeWith": "Made with ❤ in Tajikistan"
+    }
+  }
+}

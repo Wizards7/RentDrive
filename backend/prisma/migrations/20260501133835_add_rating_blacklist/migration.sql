@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "isBlacklisted" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "rating" DOUBLE PRECISION NOT NULL DEFAULT 5.0;
