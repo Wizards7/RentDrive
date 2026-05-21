@@ -11,6 +11,7 @@ COPY prisma ./prisma
 RUN npx prisma generate
 
 COPY tsconfig.json ./
+COPY swagger.yaml ./
 COPY src ./src
 
 RUN npm run build
