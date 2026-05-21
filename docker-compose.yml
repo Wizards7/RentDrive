@@ -8,7 +8,7 @@ services:
     ports:
       - "3001:3001"
     environment:
-      DATABASE_URL: postgresql://rentacar_zurv_user:TWE6M3QqRliO7K3d7e0zRSjAxPoKsqmB@dpg-d879lm28qa3s73d3pdi0-a.oregon-postgres.render.com/rentacar_zurv
+      DATABASE_URL: postgresql://rentdrive_user:askkqJidn5SgWmJsG41jebrUn3eBEh52@dpg-d87bljjtqb8s7394iil0-a.oregon-postgres.render.com/rentdrive
       JWT_SECRET: dev-secret-change-in-production
       JWT_EXPIRES_IN: 7d
       PORT: 3001
